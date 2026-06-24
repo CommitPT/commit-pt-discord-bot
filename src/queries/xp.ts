@@ -16,4 +16,8 @@ export const queries = {
     VALUES (?, ?, ?)
     ON CONFLICT(user_id, guild_id) DO UPDATE SET xp = excluded.xp
   `),
+
+  getTopXp: db.prepare<[string, number], UserXpRow>(
+    'SELECT * FROM user_xp WHERE guild_id = ? ORDER BY xp DESC LIMIT ?',
+  ),
 };

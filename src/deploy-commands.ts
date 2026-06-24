@@ -6,6 +6,7 @@ import * as info from './commands/info';
 import * as links from './commands/links';
 import * as rank from './commands/rank';
 import * as setxp from './commands/setxp';
+import * as leaderboard from './commands/leaderboard';
 
 const commands: (SlashCommandBuilder | SlashCommandOptionsOnlyBuilder)[] = [
   ping.data,
@@ -14,6 +15,7 @@ const commands: (SlashCommandBuilder | SlashCommandOptionsOnlyBuilder)[] = [
   links.data,
   rank.data,
   setxp.data,
+  leaderboard.data,
 ];
 
 const token = process.env.TOKEN!;
