@@ -12,6 +12,7 @@ import {
 import * as ping from './commands/ping';
 import * as members from './commands/members';
 import * as info from './commands/info';
+import * as links from './commands/links';
 import { handleGuildMemberAdd, assignProgrammerRole } from './events/guildMemberAdd';
 import { handleGuildMemberUpdate } from './events/guildMemberUpdate';
 import { handleMessageCreate } from './events/messageCreate';
@@ -22,7 +23,7 @@ interface Command {
   execute: (interaction: ChatInputCommandInteraction) => Promise<void>;
 }
 
-const commands: Command[] = [ping, members, info];
+const commands: Command[] = [ping, members, info, links];
 
 const bot = new Client({
   intents: [

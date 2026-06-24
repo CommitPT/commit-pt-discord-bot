@@ -3,11 +3,13 @@ import { REST, Routes, SlashCommandBuilder, SlashCommandOptionsOnlyBuilder } fro
 import * as ping from './commands/ping';
 import * as members from './commands/members';
 import * as info from './commands/info';
+import * as links from './commands/links';
 
 const commands: (SlashCommandBuilder | SlashCommandOptionsOnlyBuilder)[] = [
   ping.data,
   members.data,
   info.data,
+  links.data,
 ];
 
 const token = process.env.TOKEN!;
