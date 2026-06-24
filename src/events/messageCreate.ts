@@ -1,23 +1,80 @@
-import { Message } from 'discord.js';
+import { Message, TextChannel } from 'discord.js';
 import { logger } from '../logger';
-import { db } from '../lib/database';
-import { verificarEAtivarDelay } from './delayxp';
+import { checkAndActivateCooldown } from '../lib/cooldown';
+import { calculateProgress } from '../lib/levels';
+import { assignProgrammerRole } from './guildMemberAdd';
+import { queries } from '../queries/xp';
+
+const MIN_WORDS = 2;
+const MIN_WORD_LENGTH = 1;
+
+function countValidWords(content: string): number {
+  return content
+    .trim()
+    .split(/\s+/)
+    .filter((word) => word.length > MIN_WORD_LENGTH).length;
+}
 
 export async function handleMessageCreate(message: Message): Promise<void> {
-  if (message.author.bot || !message.member) return;
+  if (message.author.bot || !message.member || !message.guildId) return;
 
-  if (!verificarEAtivarDelay(message.author.id)) return;
+  await assignProgrammerRole(message.member);
 
-  const xpwin = Math.floor(Math.random() * 11) + 15;
+  const wordCount = countValidWords(message.content);
 
-  logger.debug(`[messageCreate] ${message.author.tag} sent a message in #${message.channel.id}`);
+  if (wordCount < MIN_WORDS) {
+    logger.debug(
+      `[messageCreate] ${message.author.tag} — message too short (${wordCount} words), no XP`,
+    );
+    return;
+  }
 
-  db.prepare(
-    `
-      INSERT INTO user_xp (user_id, guild_id, xp, level)
-      VALUES ( ?,?,?,1)
-      ON CONFLICT(user_id,guild_id) DO UPDATE SET xp= xp + ?
-  
-  `,
-  ).run(message.author.id, message.guild?.id, xpwin, xpwin);
+  if (!checkAndActivateCooldown(message.author.id)) {
+    logger.debug(`[messageCreate] ${message.author.tag} — cooldown active, no XP`);
+    return;
+  }
+
+  const xpGained = wordCount;
+
+  logger.debug(
+    `[messageCreate] ${message.author.tag} gained ${xpGained} XP (${wordCount} words) in guild ${message.guildId}`,
+  );
+
+  const row = queries.getUserXp.get(message.author.id, message.guildId);
+
+  const previousLevel = row?.level ?? 1;
+  const newTotalXp = (row?.xp ?? 0) + xpGained;
+  const { level: newLevel } = calculateProgress(newTotalXp);
+
+  queries.upsertUserXp.run(
+    message.author.id,
+    message.guildId,
+    newTotalXp,
+    newLevel,
+    newTotalXp,
+    newLevel,
+  );
+
+  if (newLevel > previousLevel) {
+    logger.success(`[messageCreate] ${message.author.tag} leveled up to level ${newLevel}`);
+    await sendLevelUpNotification(message, newLevel);
+  }
+}
+
+async function sendLevelUpNotification(message: Message, newLevel: number): Promise<void> {
+  const channelId = process.env.WELCOME_CHANNEL_ID;
+  if (!channelId) {
+    logger.warn('[messageCreate] WELCOME_CHANNEL_ID not set, skipping level-up notification');
+    return;
+  }
+
+  const channel = message.client.channels.cache.get(channelId);
+  if (!channel?.isTextBased()) {
+    logger.warn(`[messageCreate] Channel ${channelId} not found or not text-based`);
+    return;
+  }
+
+  await (channel as TextChannel).send(
+    `🎉 <@${message.author.id}> just reached **level ${newLevel}**! Keep it up! 🚀`,
+  );
 }

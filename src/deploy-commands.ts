@@ -4,12 +4,14 @@ import * as ping from './commands/ping';
 import * as members from './commands/members';
 import * as info from './commands/info';
 import * as links from './commands/links';
+import * as rank from './commands/rank';
 
 const commands: (SlashCommandBuilder | SlashCommandOptionsOnlyBuilder)[] = [
   ping.data,
   members.data,
   info.data,
   links.data,
+  rank.data,
 ];
 
 const token = process.env.TOKEN!;
