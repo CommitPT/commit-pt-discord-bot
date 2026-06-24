@@ -14,6 +14,7 @@ import * as members from './commands/members';
 import * as info from './commands/info';
 import { handleGuildMemberAdd } from './events/guildMemberAdd';
 import { handleGuildMemberUpdate } from './events/guildMemberUpdate';
+import { logger } from './logger';
 
 interface Command {
   data: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder;
@@ -37,27 +38,42 @@ for (const command of commands) {
 }
 
 bot.once('ready', () => {
-  console.log('AQUI E PAVUNA!');
+  logger.success(`Bot online: ${bot.user?.tag}`);
+  logger.info(`Guilds: ${bot.guilds.cache.size} | Commands: ${commandMap.size}`);
 });
 
 bot.on('guildMemberAdd', (member: GuildMember) => {
-  handleGuildMemberAdd(member).catch(console.error);
+  logger.info(`[guildMemberAdd] ${member.user.tag} (${member.id}) joined "${member.guild.name}"`);
+  handleGuildMemberAdd(member).catch((err) => logger.error('[guildMemberAdd]', err));
 });
 
 bot.on('guildMemberUpdate', (oldMember, newMember) => {
-  handleGuildMemberUpdate(oldMember as GuildMember, newMember).catch(console.error);
+  logger.debug(
+    `[guildMemberUpdate] ${newMember.user.tag} (${newMember.id}) updated in "${newMember.guild.name}"`,
+  );
+  handleGuildMemberUpdate(oldMember as GuildMember, newMember).catch((err) =>
+    logger.error('[guildMemberUpdate]', err),
+  );
 });
 
 bot.on('interactionCreate', async (interaction: Interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
+  logger.info(
+    `[command] /${interaction.commandName} by ${interaction.user.tag} (${interaction.user.id})`,
+  );
+
   const command = commandMap.get(interaction.commandName);
-  if (!command) return;
+  if (!command) {
+    logger.warn(`[command] Unknown command: /${interaction.commandName}`);
+    return;
+  }
 
   try {
     await command.execute(interaction);
+    logger.success(`[command] /${interaction.commandName} completed`);
   } catch (error) {
-    console.error(error);
+    logger.error(`[command] /${interaction.commandName} failed:`, error);
     await interaction.reply({
       content: 'An error occurred while executing this command.',
       ephemeral: true,

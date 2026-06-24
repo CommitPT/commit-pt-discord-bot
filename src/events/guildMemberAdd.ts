@@ -1,19 +1,24 @@
 import { EmbedBuilder, GuildMember, TextChannel } from 'discord.js';
+import { logger } from '../logger';
 
 export async function handleGuildMemberAdd(member: GuildMember): Promise<void> {
   const channelId = process.env.WELCOME_CHANNEL_ID;
 
   if (!channelId) {
-    console.warn('WELCOME_CHANNEL_ID is not set in .env');
+    logger.warn('[guildMemberAdd] WELCOME_CHANNEL_ID is not set in .env');
     return;
   }
 
   const channel = member.guild.channels.cache.get(channelId);
 
   if (!channel || !channel.isTextBased()) {
-    console.warn(`Welcome channel ${channelId} not found or is not a text channel`);
+    logger.warn(`[guildMemberAdd] Welcome channel ${channelId} not found or is not a text channel`);
     return;
   }
+
+  logger.info(
+    `[guildMemberAdd] Sending welcome message for ${member.user.tag} to #${channel.name}`,
+  );
 
   const embed = new EmbedBuilder()
     .setColor('#e74c3c')

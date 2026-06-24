@@ -1,4 +1,5 @@
 import { EmbedBuilder, GuildMember, TextChannel } from 'discord.js';
+import { logger } from '../logger';
 
 const COMMIT_PLUS_ROLE_ID = '1514004224889983026';
 
@@ -11,19 +12,29 @@ export async function handleGuildMemberUpdate(
 
   if (hadRole || !hasRole) return;
 
+  logger.info(
+    `[guildMemberUpdate] ${newMember.user.tag} received Commit+ role in "${newMember.guild.name}"`,
+  );
+
   const channelId = process.env.WELCOME_CHANNEL_ID;
 
   if (!channelId) {
-    console.warn('WELCOME_CHANNEL_ID is not set in .env');
+    logger.warn('[guildMemberUpdate] WELCOME_CHANNEL_ID is not set in .env');
     return;
   }
 
   const channel = newMember.guild.channels.cache.get(channelId);
 
   if (!channel || !channel.isTextBased()) {
-    console.warn(`Welcome channel ${channelId} not found or is not a text channel`);
+    logger.warn(
+      `[guildMemberUpdate] Welcome channel ${channelId} not found or is not a text channel`,
+    );
     return;
   }
+
+  logger.info(
+    `[guildMemberUpdate] Sending Commit+ announcement for ${newMember.user.tag} to #${channel.name}`,
+  );
 
   const embed = new EmbedBuilder()
     .setColor('#f1c40f')
