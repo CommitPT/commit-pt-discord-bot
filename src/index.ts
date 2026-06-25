@@ -18,6 +18,7 @@ import * as rank from './commands/rank';
 import * as setxp from './commands/setxp';
 import * as leaderboard from './commands/leaderboard';
 import * as logCommitPlus from './commands/log-commit-plus';
+import * as sellMessage from './commands/sell-message';
 import { handleGuildMemberAdd, assignProgrammerRole } from './events/guildMemberAdd';
 import { handleGuildMemberUpdate } from './events/guildMemberUpdate';
 import { handleMessageCreate } from './events/messageCreate';
@@ -28,7 +29,17 @@ interface Command {
   execute: (interaction: ChatInputCommandInteraction) => Promise<void>;
 }
 
-const commands: Command[] = [ping, members, info, link, rank, setxp, leaderboard, logCommitPlus];
+const commands: Command[] = [
+  ping,
+  members,
+  info,
+  link,
+  rank,
+  setxp,
+  leaderboard,
+  logCommitPlus,
+  sellMessage,
+];
 
 const bot = new Client({
   intents: [

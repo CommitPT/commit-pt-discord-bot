@@ -8,6 +8,7 @@ import * as rank from './commands/rank';
 import * as setxp from './commands/setxp';
 import * as leaderboard from './commands/leaderboard';
 import * as logCommitPlus from './commands/log-commit-plus';
+import * as sellMessage from './commands/sell-message';
 
 const commands: (SlashCommandBuilder | SlashCommandOptionsOnlyBuilder)[] = [
   ping.data,
@@ -18,6 +19,7 @@ const commands: (SlashCommandBuilder | SlashCommandOptionsOnlyBuilder)[] = [
   setxp.data,
   leaderboard.data,
   logCommitPlus.data,
+  sellMessage.data,
 ];
 
 const token = process.env.TOKEN!;
