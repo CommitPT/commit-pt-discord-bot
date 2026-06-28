@@ -27,7 +27,7 @@ import * as selectRoles from './commands/select-roles';
 import * as sellMessage from './commands/sell-message';
 import * as setxp from './commands/setxp';
 import * as setupTickets from './commands/setup-tickets';
-import { AUTO_ROLES_AREAS, AUTO_ROLES_LANGUAGES, formatEmoji } from './constants';
+import { AUTO_ROLES_AREAS, AUTO_ROLES_LANGUAGES, formatEmoji, ROLES } from './constants';
 import { assignProgrammerRole, handleGuildMemberAdd } from './events/guildMemberAdd';
 import { handleGuildMemberUpdate } from './events/guildMemberUpdate';
 import {
@@ -81,9 +81,18 @@ for (const command of commands) {
   commandMap.set(command.data.name, command);
 }
 
+function updateCommitPlusStatus(): void {
+  const guild = bot.guilds.cache.get(process.env.GUILD_ID!);
+  if (!guild) return;
+
+  const count = guild.roles.cache.get(ROLES.COMMIT_PLUS)?.members.size ?? 0;
+  bot.user?.setActivity(`${count} Commit+ Members`);
+}
+
 bot.once('ready', async () => {
   setLoggerClient(bot);
 
+  updateCommitPlusStatus();
   logger.success(`Bot online: ${bot.user?.tag}`);
   logger.info(`Guilds: ${bot.guilds.cache.size} | Commands: ${commandMap.size}`);
 
@@ -127,6 +136,7 @@ bot.on('guildMemberUpdate', (oldMember, newMember) => {
   handleGuildMemberUpdate(oldMember as GuildMember, newMember).catch((err) =>
     logger.error('[guildMemberUpdate]', err),
   );
+  updateCommitPlusStatus();
 });
 
 bot.on('interactionCreate', async (interaction: Interaction) => {
