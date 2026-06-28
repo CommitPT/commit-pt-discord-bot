@@ -65,14 +65,9 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 }
 
 async function sendLevelUpNotification(message: Message, newLevel: number): Promise<void> {
-  if (!CHANNELS.WELCOME) {
-    logger.warn('[messageCreate] WELCOME_CHANNEL_ID not set, skipping level-up notification');
-    return;
-  }
-
-  const channel = message.client.channels.cache.get(CHANNELS.WELCOME);
+  const channel = message.client.channels.cache.get(CHANNELS.LEVELS);
   if (!channel?.isTextBased()) {
-    logger.warn(`[messageCreate] Channel ${CHANNELS.WELCOME} not found or not text-based`);
+    logger.warn(`[messageCreate] Channel ${CHANNELS.LEVELS} not found or not text-based`);
     return;
   }
 
