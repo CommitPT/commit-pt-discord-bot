@@ -1,6 +1,7 @@
 import { Message, TextChannel } from 'discord.js';
 import { logger } from '../logger';
 import { checkAndActivateCooldown } from '../lib/cooldown';
+import { db } from '../lib/database';
 import { calculateProgress } from '../lib/levels';
 import { assignProgrammerRole } from './guildMemberAdd';
 import { queries } from '../queries/xp';
@@ -50,6 +51,12 @@ export async function handleMessageCreate(message: Message): Promise<void> {
   const { level: newLevel } = calculateProgress(newTotalXp);
 
   queries.upsertUserActivity.run(message.author.id, message.guildId, newTotalXp, Date.now());
+
+  const today = new Date().toISOString().slice(0, 10);
+  db.prepare(
+    `INSERT INTO message_stats (date, count) VALUES (?, 1)
+    ON CONFLICT(date) DO UPDATE SET count = count + 1`,
+  ).run(today);
 
   if (newLevel > previousLevel) {
     logger.success(`[messageCreate] ${message.author.tag} leveled up to level ${newLevel}`);

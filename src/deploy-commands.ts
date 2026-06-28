@@ -7,6 +7,7 @@ import {
   SlashCommandSubcommandsOnlyBuilder,
 } from 'discord.js';
 import * as criarNoticia from './commands/criar-noticia';
+import * as stats from './commands/stats';
 import * as enviarNoticias from './commands/enviar-noticias';
 import * as ping from './commands/ping';
 import * as members from './commands/members';
@@ -48,6 +49,7 @@ const commands: (
   setupTickets.data,
   enviarNoticias.data,
   criarNoticia.data,
+  stats.data,
 ];
 
 const token = process.env.TOKEN!;

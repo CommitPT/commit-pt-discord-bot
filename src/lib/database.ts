@@ -62,4 +62,36 @@ db.exec(`
 
 db.prepare(`INSERT OR IGNORE INTO ticket_counter (id, counter) VALUES (1, 0)`).run();
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS message_stats (
+    date  TEXT    PRIMARY KEY,
+    count INTEGER DEFAULT 0
+  )
+`);
+
+// Seed historical message count on first run
+const today = new Date().toISOString().slice(0, 10);
+db.prepare(
+  `
+  INSERT INTO message_stats (date, count) VALUES (?, 83278)
+  ON CONFLICT(date) DO NOTHING
+`,
+).run(today);
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS resolved_tickets (
+    id      INTEGER PRIMARY KEY CHECK (id = 1),
+    counter INTEGER DEFAULT 0
+  )
+`);
+db.prepare(`INSERT OR IGNORE INTO resolved_tickets (id, counter) VALUES (1, 0)`).run();
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS member_joins (
+    user_id   TEXT    NOT NULL,
+    guild_id  TEXT    NOT NULL,
+    joined_at INTEGER NOT NULL
+  )
+`);
+
 logger.success(`[database] SQLite ready at ${dbPath}`);

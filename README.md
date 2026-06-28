@@ -47,6 +47,7 @@ Bot warnings and errors are forwarded to a private alerts channel. Errors also t
 | `/me` | Shows your XP, level, and rank in the server |
 | `/me membro:<user>` | Shows another member's XP, level, and rank |
 | `/leaderboard` | Shows the top 10 members by XP |
+| `/stats` | Shows server statistics (members, activity, XP, tickets, invites) |
 | `/invites leaderboard` | Ranking of members with the most invites |
 | `/invited-by membro:<user>` | Shows who invited a specific member |
 | `/invites-from membro:<user>` | Shows how many members someone has invited |

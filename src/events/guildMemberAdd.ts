@@ -1,8 +1,15 @@
 import { EmbedBuilder, GuildMember, TextChannel } from 'discord.js';
 import { logger } from '../logger';
 import { CHANNELS, PRIMARY_COLOR, ROLES } from '../constants';
+import { db } from '../lib/database';
 
 export async function handleGuildMemberAdd(member: GuildMember): Promise<void> {
+  db.prepare(`INSERT INTO member_joins (user_id, guild_id, joined_at) VALUES (?, ?, ?)`).run(
+    member.id,
+    member.guild.id,
+    Date.now(),
+  );
+
   if (!CHANNELS.WELCOME) {
     logger.warn('[guildMemberAdd] WELCOME_CHANNEL_ID is not set in .env');
     return;

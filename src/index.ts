@@ -12,6 +12,7 @@ import {
 } from 'discord.js';
 import 'dotenv/config';
 import * as criarNoticia from './commands/criar-noticia';
+import * as stats from './commands/stats';
 import * as enviarNoticias from './commands/enviar-noticias';
 import * as help from './commands/help';
 import * as info from './commands/info';
@@ -70,6 +71,7 @@ const commands: Command[] = [
   setupTickets,
   enviarNoticias,
   criarNoticia,
+  stats,
 ];
 
 const bot = new Client({

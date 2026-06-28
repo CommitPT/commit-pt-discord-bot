@@ -19,6 +19,10 @@ import { CATEGORIES, PRIMARY_COLOR, ROLES } from '../constants';
 import { db } from '../lib/database';
 import { logger } from '../logger';
 
+function incrementResolvedTickets(): void {
+  db.prepare(`UPDATE resolved_tickets SET counter = counter + 1 WHERE id = 1`).run();
+}
+
 const COMMIT_PLUS_QUESTIONS_FIELDS = [
   {
     name: '👤 Conhecer-te melhor',
@@ -213,6 +217,7 @@ export async function handleTicketClose(interaction: ButtonInteraction): Promise
 
   await interaction.reply({ content: '🔒 A fechar o ticket...' });
 
+  incrementResolvedTickets();
   logger.info(`[tickets] Closing ${channel.name} by ${interaction.user.tag}`);
 
   setTimeout(() => {
