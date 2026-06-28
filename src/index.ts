@@ -1,5 +1,3 @@
-import './lib/database';
-import 'dotenv/config';
 import {
   ChatInputCommandInteraction,
   Client,
@@ -12,33 +10,35 @@ import {
   SlashCommandOptionsOnlyBuilder,
   SlashCommandSubcommandsOnlyBuilder,
 } from 'discord.js';
-import * as ping from './commands/ping';
-import * as members from './commands/members';
+import 'dotenv/config';
+import * as help from './commands/help';
 import * as info from './commands/info';
-import * as link from './commands/links';
-import * as me from './commands/me';
-import * as setxp from './commands/setxp';
-import * as leaderboard from './commands/leaderboard';
-import * as logCommitPlus from './commands/log-commit-plus';
-import * as sellMessage from './commands/sell-message';
+import * as invitedBy from './commands/invited-by';
 import * as invites from './commands/invites';
 import * as invitesFrom from './commands/invites-from';
-import * as invitedBy from './commands/invited-by';
-import * as help from './commands/help';
-import * as selectRoles from './commands/select-roles';
+import * as leaderboard from './commands/leaderboard';
+import * as link from './commands/links';
+import * as logCommitPlus from './commands/log-commit-plus';
+import * as me from './commands/me';
+import * as members from './commands/members';
+import * as ping from './commands/ping';
 import * as selectLanguages from './commands/select-languages';
+import * as selectRoles from './commands/select-roles';
+import * as sellMessage from './commands/sell-message';
+import * as setxp from './commands/setxp';
 import { AUTO_ROLES_AREAS, AUTO_ROLES_LANGUAGES, formatEmoji } from './constants';
-import { handleGuildMemberAdd, assignProgrammerRole } from './events/guildMemberAdd';
+import { assignProgrammerRole, handleGuildMemberAdd } from './events/guildMemberAdd';
 import { handleGuildMemberUpdate } from './events/guildMemberUpdate';
-import { handleMessageCreate } from './events/messageCreate';
 import {
   cacheGuildInvites,
   handleInviteUsed,
-  updateInviteCache,
   removeFromInviteCache,
   removeInviteRecord,
+  updateInviteCache,
 } from './events/inviteTracker';
-import { logger } from './logger';
+import { handleMessageCreate } from './events/messageCreate';
+import './lib/database';
+import { logger, setLoggerClient } from './logger';
 
 interface Command {
   data: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder | SlashCommandSubcommandsOnlyBuilder;
@@ -79,6 +79,8 @@ for (const command of commands) {
 }
 
 bot.once('ready', async () => {
+  setLoggerClient(bot);
+
   logger.success(`Bot online: ${bot.user?.tag}`);
   logger.info(`Guilds: ${bot.guilds.cache.size} | Commands: ${commandMap.size}`);
 
