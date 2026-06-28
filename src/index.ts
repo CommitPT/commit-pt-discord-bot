@@ -11,6 +11,8 @@ import {
   SlashCommandSubcommandsOnlyBuilder,
 } from 'discord.js';
 import 'dotenv/config';
+import * as criarNoticia from './commands/criar-noticia';
+import * as enviarNoticias from './commands/enviar-noticias';
 import * as help from './commands/help';
 import * as info from './commands/info';
 import * as invitedBy from './commands/invited-by';
@@ -39,6 +41,7 @@ import {
 } from './events/inviteTracker';
 import { handleMessageCreate } from './events/messageCreate';
 import { handleTicketClose, handleTicketModalSubmit, handleTicketOpen } from './events/tickets';
+import { fetchAndPublishNews } from './lib/news';
 import { enqueue } from './lib/queue';
 import './lib/database';
 import { logger, setLoggerClient } from './logger';
@@ -65,6 +68,8 @@ const commands: Command[] = [
   selectRoles,
   selectLanguages,
   setupTickets,
+  enviarNoticias,
+  criarNoticia,
 ];
 
 const bot = new Client({
@@ -104,6 +109,11 @@ bot.once('ready', async () => {
   for (const guild of bot.guilds.cache.values()) {
     await cacheGuildInvites(guild);
   }
+
+  const MS_8H = 8 * 60 * 60 * 1000;
+  setInterval(() => {
+    fetchAndPublishNews(bot).catch((err) => logger.error('[news] Scheduled run failed:', err));
+  }, MS_8H);
 });
 
 bot.on('guildMemberAdd', (member: GuildMember) => {

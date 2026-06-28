@@ -61,6 +61,13 @@ Bot warnings and errors are forwarded to a private alerts channel. Errors also t
 | `/select-roles` | Post the area roles selection embed in the roles channel |
 | `/select-languages` | Post the programming languages selection embed in the roles channel |
 | `/setup-tickets` | Post the ticket opening embed in the tickets channel |
+| `/enviar-noticias` | Manually publish tech news articles to the news channel |
+
+### Staff-only
+
+| Command | Description |
+|---|---|
+| `/criar-noticia url:<url>` | Publish a custom news article by URL to the news channel |
 
 ---
 

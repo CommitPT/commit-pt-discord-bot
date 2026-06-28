@@ -6,6 +6,8 @@ import {
   SlashCommandOptionsOnlyBuilder,
   SlashCommandSubcommandsOnlyBuilder,
 } from 'discord.js';
+import * as criarNoticia from './commands/criar-noticia';
+import * as enviarNoticias from './commands/enviar-noticias';
 import * as ping from './commands/ping';
 import * as members from './commands/members';
 import * as info from './commands/info';
@@ -44,6 +46,8 @@ const commands: (
   selectRoles.data,
   selectLanguages.data,
   setupTickets.data,
+  enviarNoticias.data,
+  criarNoticia.data,
 ];
 
 const token = process.env.TOKEN!;
