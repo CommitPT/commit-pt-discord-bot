@@ -11,6 +11,7 @@ export const ROLES = {
   COMMIT_PLUS: '1514004224889983026',
   PROGRAMMER: '1519017947589382154',
   STAFF: '1427069200123433021',
+  ALERTS: '1521545727699062864',
 } as const;
 
 export const PROJECT_ROLES = [
@@ -18,8 +19,6 @@ export const PROJECT_ROLES = [
   { name: 'Website Developer', roleId: '1521545491278463077' },
   { name: 'Platform Developer', roleId: '1521545454394015918' },
 ] as const;
-
-export const ALERT_ROLE_ID = '1521545727699062864';
 
 export const AUTO_ROLES_AREAS = [
   { name: 'Frontend', emoji: '🎨', roleId: '1411394991628226590' },

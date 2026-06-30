@@ -33,7 +33,6 @@ import * as setupTickets from './commands/setup-tickets';
 import * as participarProjetos from './commands/participar-projetos';
 import * as receberAlertas from './commands/receber-alertas';
 import {
-  ALERT_ROLE_ID,
   AUTO_ROLES_AREAS,
   AUTO_ROLES_LANGUAGES,
   CHANNELS,
@@ -254,7 +253,7 @@ bot.on('interactionCreate', async (interaction: Interaction) => {
       return;
     }
 
-    const role = interaction.guild.roles.cache.get(ALERT_ROLE_ID);
+    const role = interaction.guild.roles.cache.get(ROLES.ALERTS);
 
     if (!role) {
       await interaction.reply({

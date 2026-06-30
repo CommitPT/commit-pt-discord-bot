@@ -34,7 +34,7 @@ async function sendToDiscord(level: 'warn' | 'error', ...args: unknown[]): Promi
   const channel = discordClient.channels.cache.get(CHANNELS.ALERTS) as TextChannel | undefined;
   if (!channel) return;
 
-  const mention = level === 'error' ? `<@&${ROLES.STAFF}> ` : '';
+  const mention = level === 'error' ? `<@&${ROLES.ALERTS}> ` : '';
   const message = `${mention}${discordLabels[level]}\n\`\`\`${formatArgs(args)}\`\`\``;
 
   channel.send(message).catch(() => {

@@ -1,6 +1,6 @@
 import { EmbedBuilder, GuildMember, TextChannel } from 'discord.js';
 import { logger } from '../logger';
-import { ALERT_ROLE_ID, CHANNELS, PRIMARY_COLOR, PROJECT_ROLES, ROLES } from '../constants';
+import { CHANNELS, PRIMARY_COLOR, PROJECT_ROLES, ROLES } from '../constants';
 import { openCommitPlusTicket } from './tickets';
 
 export async function handleGuildMemberUpdate(
@@ -11,7 +11,7 @@ export async function handleGuildMemberUpdate(
   const hasRole = newMember.roles.cache.has(ROLES.COMMIT_PLUS);
 
   if (hadRole && !hasRole) {
-    const roleIdsToRemove = [...PROJECT_ROLES.map((r) => r.roleId), ALERT_ROLE_ID].filter((id) =>
+    const roleIdsToRemove = [...PROJECT_ROLES.map((r) => r.roleId), ROLES.ALERTS].filter((id) =>
       newMember.roles.cache.has(id),
     );
     if (roleIdsToRemove.length > 0) {
