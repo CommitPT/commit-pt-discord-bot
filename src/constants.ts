@@ -85,6 +85,11 @@ export const AUTO_ROLES_LANGUAGES: { name: string; emoji: RoleEmoji; roleId: str
     emoji: { name: 'kotlin', id: '1521432694767091873' },
     roleId: '1521432443775746148',
   },
+  {
+    name: 'Ruby',
+    emoji: { name: 'ruby', id: '1521623203359756532' },
+    roleId: '1521623476090175692',
+  },
 ];
 
 export const CATEGORIES = {
