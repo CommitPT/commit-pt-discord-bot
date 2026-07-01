@@ -35,7 +35,7 @@ async function fetchArticlesFromFeed(feedUrl: string, sourceName: string): Promi
         pubDate: item.pubDate,
       }));
   } catch (err) {
-    logger.warn(`[news] Failed to fetch feed "${sourceName}":`, err);
+    logger.info(`[news] Failed to fetch feed "${sourceName}":`, err);
     return [];
   }
 }

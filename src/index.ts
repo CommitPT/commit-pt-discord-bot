@@ -338,7 +338,7 @@ bot.on('interactionCreate', async (interaction: Interaction) => {
 
   const command = commandMap.get(interaction.commandName);
   if (!command) {
-    logger.warn(`[command] Unknown command: /${interaction.commandName}`);
+    logger.info(`[command] Unknown command: /${interaction.commandName}`);
     return;
   }
 

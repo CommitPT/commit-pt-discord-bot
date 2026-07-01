@@ -214,6 +214,15 @@ export async function openCommitPlusTicket(member: GuildMember): Promise<void> {
 }
 
 export async function handleTicketClose(interaction: ButtonInteraction): Promise<void> {
+  const member = interaction.member as GuildMember | null;
+  if (!member?.permissions.has(PermissionFlagsBits.Administrator)) {
+    await interaction.reply({
+      content: '❌ Apenas administradores podem fechar tickets.',
+      ephemeral: true,
+    });
+    return;
+  }
+
   const channel = interaction.channel as TextChannel | null;
 
   if (!channel) return;
