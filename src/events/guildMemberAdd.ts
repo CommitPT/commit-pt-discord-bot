@@ -56,6 +56,12 @@ export async function assignProgrammerRole(member: GuildMember): Promise<void> {
     return;
   }
 
-  await member.roles.add(role);
-  logger.success(`[assignProgrammerRole] Assigned "${role.name}" to ${member.user.username}`);
+  try {
+    await member.roles.add(role);
+    logger.success(`[assignProgrammerRole] Assigned "${role.name}" to ${member.user.username}`);
+  } catch (err) {
+    logger.warn(
+      `[assignProgrammerRole] Could not assign "${role.name}" to ${member.user.username}: ${err}`,
+    );
+  }
 }

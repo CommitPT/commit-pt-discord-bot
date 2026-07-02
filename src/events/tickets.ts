@@ -137,7 +137,7 @@ export async function handleTicketOpen(interaction: ButtonInteraction): Promise<
 }
 
 export async function handleTicketModalSubmit(interaction: ModalSubmitInteraction): Promise<void> {
-  await interaction.deferReply({ ephemeral: true });
+  await interaction.deferReply({ flags: [MessageFlags.Ephemeral] });
 
   const subject = interaction.fields.getTextInputValue('ticket:subject');
   const guild = interaction.guild;

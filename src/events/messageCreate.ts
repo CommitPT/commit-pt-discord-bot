@@ -21,7 +21,9 @@ function countValidWords(content: string): number {
 export async function handleMessageCreate(message: Message): Promise<void> {
   if (message.author.bot || !message.member || !message.guildId) return;
 
-  await assignProgrammerRole(message.member);
+  assignProgrammerRole(message.member).catch((err) =>
+    logger.warn(`[messageCreate] Failed to assign programmer role: ${err}`),
+  );
 
   const wordCount = countValidWords(message.content);
 

@@ -13,26 +13,28 @@ async function processQueue(): Promise<void> {
   if (processing) return;
   processing = true;
 
-  while (queue.length > 0) {
-    const entry = queue[0];
+  try {
+    while (queue.length > 0) {
+      const entry = queue[0];
 
-    try {
-      await entry.task();
-      queue.shift();
-    } catch (err: unknown) {
-      const retryAfter = extractRetryAfter(err);
-
-      if (retryAfter > 0 && entry.retries < MAX_RETRIES) {
-        entry.retries++;
-        await sleep(retryAfter);
-      } else {
+      try {
+        await entry.task();
         queue.shift();
-        throw err;
+      } catch (err: unknown) {
+        const retryAfter = extractRetryAfter(err);
+
+        if (retryAfter > 0 && entry.retries < MAX_RETRIES) {
+          entry.retries++;
+          await sleep(retryAfter);
+        } else {
+          queue.shift();
+          throw err;
+        }
       }
     }
+  } finally {
+    processing = false;
   }
-
-  processing = false;
 }
 
 function extractRetryAfter(err: unknown): number {
