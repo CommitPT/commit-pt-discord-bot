@@ -2,6 +2,7 @@ import {
   ChatInputCommandInteraction,
   EmbedBuilder,
   GuildMember,
+  MessageFlags,
   SlashCommandBuilder,
 } from 'discord.js';
 import { calculateProgress } from '../lib/levels';
@@ -28,10 +29,10 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
   if (!interaction.guildId || !interaction.guild) {
-    logger.warn(`[me] Used outside of a guild by ${interaction.user.tag}`);
+    logger.warn(`[me] Used outside of a guild by ${interaction.user.username}`);
     await interaction.reply({
       content: 'Este comando só pode ser usado num servidor.',
-      ephemeral: true,
+      flags: [MessageFlags.Ephemeral],
     });
     return;
   }
@@ -42,7 +43,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   const isSelf = targetUser.id === interaction.user.id;
 
   logger.info(
-    `[me] ${interaction.user.tag} checked ${isSelf ? 'their own profile' : `profile of ${targetUser.tag}`} in guild ${interaction.guildId}`,
+    `[me] ${interaction.user.username} checked ${isSelf ? 'their own profile' : `profile of ${targetUser.username}`} in guild ${interaction.guildId}`,
   );
 
   let member: GuildMember | null = null;
@@ -79,7 +80,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
       .join(' ') || 'Nenhum';
 
   logger.debug(
-    `[me] ${targetUser.tag} — level ${level}, ${totalXp} total XP, ${inviteStats.total} invites`,
+    `[me] ${targetUser.username} — level ${level}, ${totalXp} total XP, ${inviteStats.total} invites`,
   );
 
   const embed = new EmbedBuilder()

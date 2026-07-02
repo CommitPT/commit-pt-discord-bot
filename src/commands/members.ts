@@ -1,4 +1,10 @@
-import { ChatInputCommandInteraction, EmbedBuilder, Role, SlashCommandBuilder } from 'discord.js';
+import {
+  ChatInputCommandInteraction,
+  EmbedBuilder,
+  MessageFlags,
+  Role,
+  SlashCommandBuilder,
+} from 'discord.js';
 import { PRIMARY_COLOR } from '../constants';
 
 const NEXT_GOAL = 500;
@@ -19,7 +25,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   if (!guild) {
     await interaction.reply({
       content: 'Este comando só pode ser usado num servidor.',
-      ephemeral: true,
+      flags: [MessageFlags.Ephemeral],
     });
     return;
   }

@@ -1,6 +1,7 @@
 import {
   ChatInputCommandInteraction,
   EmbedBuilder,
+  MessageFlags,
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from 'discord.js';
@@ -28,16 +29,16 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   if (!interaction.guildId || !interaction.memberPermissions) {
     await interaction.reply({
       content: 'Este comando só pode ser usado num servidor.',
-      ephemeral: true,
+      flags: [MessageFlags.Ephemeral],
     });
     return;
   }
 
   if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) {
-    logger.warn(`[setxp] Unauthorized attempt by ${interaction.user.tag}`);
+    logger.warn(`[setxp] Unauthorized attempt by ${interaction.user.username}`);
     await interaction.reply({
       content: 'Precisas de permissões de Administrador para usar este comando.',
-      ephemeral: true,
+      flags: [MessageFlags.Ephemeral],
     });
     return;
   }
@@ -54,7 +55,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   const { level: newLevel } = calculateProgress(newXp);
 
   logger.success(
-    `[setxp] ${interaction.user.tag} set XP of ${target.tag} from ${previousXp} to ${newXp} (level ${previousLevel} → ${newLevel})`,
+    `[setxp] ${interaction.user.username} set XP of ${target.username} from ${previousXp} to ${newXp} (level ${previousLevel} → ${newLevel})`,
   );
 
   const embed = new EmbedBuilder()

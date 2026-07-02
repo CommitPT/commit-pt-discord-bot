@@ -27,20 +27,20 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 
   if (wordCount < MIN_WORDS) {
     logger.debug(
-      `[messageCreate] ${message.author.tag} — message too short (${wordCount} words), no XP`,
+      `[messageCreate] ${message.author.username} — message too short (${wordCount} words), no XP`,
     );
     return;
   }
 
   if (!checkAndActivateCooldown(message.author.id)) {
-    logger.debug(`[messageCreate] ${message.author.tag} — cooldown active, no XP`);
+    logger.debug(`[messageCreate] ${message.author.username} — cooldown active, no XP`);
     return;
   }
 
   const xpGained = Math.min(wordCount, MAX_XP_PER_MESSAGE);
 
   logger.debug(
-    `[messageCreate] ${message.author.tag} gained ${xpGained} XP (${wordCount} words) in guild ${message.guildId}`,
+    `[messageCreate] ${message.author.username} gained ${xpGained} XP (${wordCount} words) in guild ${message.guildId}`,
   );
 
   const row = queries.getUserXp.get(message.author.id, message.guildId);
@@ -59,7 +59,7 @@ export async function handleMessageCreate(message: Message): Promise<void> {
   ).run(today);
 
   if (newLevel > previousLevel) {
-    logger.success(`[messageCreate] ${message.author.tag} leveled up to level ${newLevel}`);
+    logger.success(`[messageCreate] ${message.author.username} leveled up to level ${newLevel}`);
     await sendLevelUpNotification(message, newLevel);
   }
 }

@@ -2,6 +2,7 @@ import {
   ChatInputCommandInteraction,
   EmbedBuilder,
   GuildMember,
+  MessageFlags,
   SlashCommandBuilder,
 } from 'discord.js';
 import { readFileSync } from 'fs';
@@ -45,7 +46,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   if (!(member instanceof GuildMember) || !member.roles.cache.has(ROLES.COMMIT_PLUS)) {
     await interaction.reply({
       content: `Este comando é exclusivo para membros Commit+. Podes obter mais informações através do canal <#${CHANNELS.COMMIT_PLUS}>.`,
-      ephemeral: true,
+      flags: [MessageFlags.Ephemeral],
     });
     return;
   }

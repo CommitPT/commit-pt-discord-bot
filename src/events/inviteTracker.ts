@@ -50,12 +50,12 @@ export async function handleInviteUsed(member: GuildMember): Promise<void> {
   inviteCache.set(guild.id, updatedMap);
 
   if (!usedInvite || !usedInvite.inviter) {
-    logger.warn(`[inviteTracker] Could not determine invite used by ${member.user.tag}`);
+    logger.warn(`[inviteTracker] Could not determine invite used by ${member.user.username}`);
     return;
   }
 
   const inviterId = usedInvite.inviter.id;
-  const inviterTag = usedInvite.inviter.tag;
+  const inviterTag = usedInvite.inviter.username;
 
   db.prepare(
     `INSERT OR REPLACE INTO invite_tracker (guild_id, inviter_id, invitee_id, invite_code, joined_at)
@@ -63,7 +63,7 @@ export async function handleInviteUsed(member: GuildMember): Promise<void> {
   ).run(guild.id, inviterId, member.id, usedInvite.code, Date.now());
 
   logger.success(
-    `[inviteTracker] ${member.user.tag} joined via invite from ${inviterTag} (code: ${usedInvite.code})`,
+    `[inviteTracker] ${member.user.username} joined via invite from ${inviterTag} (code: ${usedInvite.code})`,
   );
 }
 

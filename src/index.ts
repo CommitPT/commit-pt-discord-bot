@@ -6,6 +6,7 @@ import {
   GuildMember,
   Interaction,
   Invite,
+  MessageFlags,
   SlashCommandBuilder,
   SlashCommandOptionsOnlyBuilder,
   SlashCommandSubcommandsOnlyBuilder,
@@ -110,7 +111,7 @@ function updateCommitPlusStatus(): void {
   bot.user?.setActivity(`${commitPlusCount} Commit+ Members`);
 }
 
-bot.once('ready', async () => {
+bot.once('clientReady', async () => {
   setLoggerClient(bot);
 
   const guild = bot.guilds.cache.get(process.env.GUILD_ID!);
@@ -134,14 +135,18 @@ bot.once('ready', async () => {
 });
 
 bot.on('guildMemberAdd', (member: GuildMember) => {
-  logger.info(`[guildMemberAdd] ${member.user.tag} (${member.id}) joined "${member.guild.name}"`);
+  logger.info(
+    `[guildMemberAdd] ${member.user.username} (${member.id}) joined "${member.guild.name}"`,
+  );
   handleInviteUsed(member).catch((err) => logger.error('[inviteTracker]', err));
   handleGuildMemberAdd(member).catch((err) => logger.error('[guildMemberAdd]', err));
   assignProgrammerRole(member).catch((err) => logger.error('[guildMemberAdd/assignRole]', err));
 });
 
 bot.on('guildMemberRemove', (member) => {
-  logger.info(`[guildMemberRemove] ${member.user.tag} (${member.id}) left "${member.guild.name}"`);
+  logger.info(
+    `[guildMemberRemove] ${member.user.username} (${member.id}) left "${member.guild.name}"`,
+  );
   removeInviteRecord(member.guild.id, member.id);
 });
 
@@ -163,7 +168,7 @@ bot.on('messageCreate', (message) => {
 
 bot.on('guildMemberUpdate', (oldMember, newMember) => {
   logger.debug(
-    `[guildMemberUpdate] ${newMember.user.tag} (${newMember.id}) updated in "${newMember.guild.name}"`,
+    `[guildMemberUpdate] ${newMember.user.username} (${newMember.id}) updated in "${newMember.guild.name}"`,
   );
   const hadCommitPlus = (oldMember as GuildMember).roles.cache.has(ROLES.COMMIT_PLUS);
   const hasCommitPlus = newMember.roles.cache.has(ROLES.COMMIT_PLUS);
@@ -194,7 +199,10 @@ bot.on('interactionCreate', async (interaction: Interaction) => {
 
   if (interaction.isButton() && interaction.customId.startsWith('project-role:')) {
     if (!(interaction.member instanceof GuildMember) || !interaction.guild) {
-      await interaction.reply({ content: 'Erro ao processar a interação.', ephemeral: true });
+      await interaction.reply({
+        content: 'Erro ao processar a interação.',
+        flags: [MessageFlags.Ephemeral],
+      });
       return;
     }
 
@@ -203,7 +211,7 @@ bot.on('interactionCreate', async (interaction: Interaction) => {
     if (!member.roles.cache.has(ROLES.COMMIT_PLUS)) {
       await interaction.reply({
         content: `Queres participar nos nossos projetos internos? Para isso é necessário uma subscrição Commit+. Podes obter mais informações através do canal <#${CHANNELS.COMMIT_PLUS}>!`,
-        ephemeral: true,
+        flags: [MessageFlags.Ephemeral],
       });
       return;
     }
@@ -212,7 +220,7 @@ bot.on('interactionCreate', async (interaction: Interaction) => {
     const roleConfig = PROJECT_ROLES.find((r) => r.name === roleName);
 
     if (!roleConfig) {
-      await interaction.reply({ content: 'Cargo inválido.', ephemeral: true });
+      await interaction.reply({ content: 'Cargo inválido.', flags: [MessageFlags.Ephemeral] });
       return;
     }
 
@@ -221,22 +229,22 @@ bot.on('interactionCreate', async (interaction: Interaction) => {
     if (!role) {
       await interaction.reply({
         content: `O cargo **${roleName}** não existe no servidor.`,
-        ephemeral: true,
+        flags: [MessageFlags.Ephemeral],
       });
       return;
     }
 
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: [MessageFlags.Ephemeral] });
 
     enqueue(async () => {
       const hasRole = member.roles.cache.has(role.id);
       if (hasRole) {
         await member.roles.remove(role);
-        logger.info(`[project-roles] Removed role "${roleName}" from ${interaction.user.tag}`);
+        logger.info(`[project-roles] Removed role "${roleName}" from ${interaction.user.username}`);
         await interaction.editReply({ content: `Cargo **${roleName}** removido.` });
       } else {
         await member.roles.add(role);
-        logger.info(`[project-roles] Added role "${roleName}" to ${interaction.user.tag}`);
+        logger.info(`[project-roles] Added role "${roleName}" to ${interaction.user.username}`);
         await interaction.editReply({ content: `Cargo **${roleName}** adicionado!` });
       }
     });
@@ -245,14 +253,17 @@ bot.on('interactionCreate', async (interaction: Interaction) => {
 
   if (interaction.isButton() && interaction.customId.startsWith('alert-role:')) {
     if (!(interaction.member instanceof GuildMember) || !interaction.guild) {
-      await interaction.reply({ content: 'Erro ao processar a interação.', ephemeral: true });
+      await interaction.reply({
+        content: 'Erro ao processar a interação.',
+        flags: [MessageFlags.Ephemeral],
+      });
       return;
     }
 
     if (!interaction.member.roles.cache.has(ROLES.COMMIT_PLUS)) {
       await interaction.reply({
         content: `Esta funcionalidade é exclusiva para membros Commit+. Podes obter mais informações através do canal <#${CHANNELS.COMMIT_PLUS}>!`,
-        ephemeral: true,
+        flags: [MessageFlags.Ephemeral],
       });
       return;
     }
@@ -262,7 +273,7 @@ bot.on('interactionCreate', async (interaction: Interaction) => {
     if (!role) {
       await interaction.reply({
         content: 'O cargo de alertas não existe no servidor.',
-        ephemeral: true,
+        flags: [MessageFlags.Ephemeral],
       });
       return;
     }
@@ -270,17 +281,17 @@ bot.on('interactionCreate', async (interaction: Interaction) => {
     const member = interaction.member;
     const subscribe = interaction.customId === 'alert-role:subscribe';
 
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: [MessageFlags.Ephemeral] });
 
     enqueue(async () => {
       const hasRole = member.roles.cache.has(role.id);
       if (subscribe && !hasRole) {
         await member.roles.add(role);
-        logger.info(`[alert-role] Subscribed ${interaction.user.tag} to alerts`);
+        logger.info(`[alert-role] Subscribed ${interaction.user.username} to alerts`);
         await interaction.editReply({ content: 'Vais passar a receber alertas do bot!' });
       } else if (!subscribe && hasRole) {
         await member.roles.remove(role);
-        logger.info(`[alert-role] Unsubscribed ${interaction.user.tag} from alerts`);
+        logger.info(`[alert-role] Unsubscribed ${interaction.user.username} from alerts`);
         await interaction.editReply({ content: 'Deixaste de receber alertas do bot.' });
       } else if (subscribe && hasRole) {
         await interaction.editReply({ content: 'Já estás a receber alertas do bot.' });
@@ -297,7 +308,7 @@ bot.on('interactionCreate', async (interaction: Interaction) => {
     const roleConfig = allRoles.find((r) => r.name === roleName);
 
     if (!roleConfig || !interaction.guild || !(interaction.member instanceof GuildMember)) {
-      await interaction.reply({ content: 'Cargo inválido.', ephemeral: true });
+      await interaction.reply({ content: 'Cargo inválido.', flags: [MessageFlags.Ephemeral] });
       return;
     }
 
@@ -306,7 +317,7 @@ bot.on('interactionCreate', async (interaction: Interaction) => {
     if (!role) {
       await interaction.reply({
         content: `O cargo **${roleName}** não existe no servidor.`,
-        ephemeral: true,
+        flags: [MessageFlags.Ephemeral],
       });
       return;
     }
@@ -314,18 +325,18 @@ bot.on('interactionCreate', async (interaction: Interaction) => {
     const member = interaction.member;
     const hasRole = member.roles.cache.has(role.id);
 
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: [MessageFlags.Ephemeral] });
 
     enqueue(async () => {
       if (hasRole) {
         await member.roles.remove(role);
-        logger.info(`[select-roles] Removed role "${roleName}" from ${interaction.user.tag}`);
+        logger.info(`[select-roles] Removed role "${roleName}" from ${interaction.user.username}`);
         await interaction.editReply({
           content: `${formatEmoji(roleConfig.emoji)} Cargo **${roleName}** removido.`,
         });
       } else {
         await member.roles.add(role);
-        logger.info(`[select-roles] Added role "${roleName}" to ${interaction.user.tag}`);
+        logger.info(`[select-roles] Added role "${roleName}" to ${interaction.user.username}`);
         await interaction.editReply({
           content: `${formatEmoji(roleConfig.emoji)} Cargo **${roleName}** adicionado!`,
         });
@@ -337,7 +348,7 @@ bot.on('interactionCreate', async (interaction: Interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
   logger.info(
-    `[command] /${interaction.commandName} by ${interaction.user.tag} (${interaction.user.id})`,
+    `[command] /${interaction.commandName} by ${interaction.user.username} (${interaction.user.id})`,
   );
 
   const command = commandMap.get(interaction.commandName);
@@ -353,7 +364,7 @@ bot.on('interactionCreate', async (interaction: Interaction) => {
     logger.error(`[command] /${interaction.commandName} failed:`, error);
     await interaction.reply({
       content: 'An error occurred while executing this command.',
-      ephemeral: true,
+      flags: [MessageFlags.Ephemeral],
     });
   }
 });

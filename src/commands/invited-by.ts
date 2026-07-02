@@ -1,4 +1,9 @@
-import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
+import {
+  ChatInputCommandInteraction,
+  EmbedBuilder,
+  MessageFlags,
+  SlashCommandBuilder,
+} from 'discord.js';
 import { getInviterOf } from '../events/inviteTracker';
 import { PRIMARY_COLOR } from '../constants';
 
@@ -16,7 +21,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   if (!result) {
     await interaction.reply({
       content: `Não há registo de quem convidou ${target}.`,
-      ephemeral: true,
+      flags: [MessageFlags.Ephemeral],
     });
     return;
   }

@@ -4,6 +4,7 @@ import {
   ButtonStyle,
   ChatInputCommandInteraction,
   EmbedBuilder,
+  MessageFlags,
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from 'discord.js';
@@ -19,7 +20,10 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   const channel = interaction.guild?.channels.cache.get(CHANNELS.TICKETS);
 
   if (!channel?.isTextBased()) {
-    await interaction.reply({ content: 'Canal de tickets não encontrado.', ephemeral: true });
+    await interaction.reply({
+      content: 'Canal de tickets não encontrado.',
+      flags: [MessageFlags.Ephemeral],
+    });
     return;
   }
 
@@ -41,5 +45,8 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button);
 
   await channel.send({ embeds: [embed], components: [row] });
-  await interaction.reply({ content: 'Embed de tickets enviado com sucesso.', ephemeral: true });
+  await interaction.reply({
+    content: 'Embed de tickets enviado com sucesso.',
+    flags: [MessageFlags.Ephemeral],
+  });
 }

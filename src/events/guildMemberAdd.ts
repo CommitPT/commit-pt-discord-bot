@@ -25,7 +25,7 @@ export async function handleGuildMemberAdd(member: GuildMember): Promise<void> {
   }
 
   logger.info(
-    `[guildMemberAdd] Sending welcome message for ${member.user.tag} to #${channel.name}`,
+    `[guildMemberAdd] Sending welcome message for ${member.user.username} to #${channel.name}`,
   );
 
   const embed = new EmbedBuilder()
@@ -57,5 +57,5 @@ export async function assignProgrammerRole(member: GuildMember): Promise<void> {
   }
 
   await member.roles.add(role);
-  logger.success(`[assignProgrammerRole] Assigned "${role.name}" to ${member.user.tag}`);
+  logger.success(`[assignProgrammerRole] Assigned "${role.name}" to ${member.user.username}`);
 }

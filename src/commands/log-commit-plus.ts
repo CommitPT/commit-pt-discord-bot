@@ -1,6 +1,7 @@
 import {
   ChatInputCommandInteraction,
   EmbedBuilder,
+  MessageFlags,
   PermissionFlagsBits,
   SlashCommandBuilder,
   TextChannel,
@@ -20,16 +21,16 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   if (!interaction.guildId || !interaction.memberPermissions) {
     await interaction.reply({
       content: 'Este comando só pode ser usado num servidor.',
-      ephemeral: true,
+      flags: [MessageFlags.Ephemeral],
     });
     return;
   }
 
   if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) {
-    logger.warn(`[log-commit-plus] Unauthorized attempt by ${interaction.user.tag}`);
+    logger.warn(`[log-commit-plus] Unauthorized attempt by ${interaction.user.username}`);
     await interaction.reply({
       content: 'Precisas de permissões de Administrador para usar este comando.',
-      ephemeral: true,
+      flags: [MessageFlags.Ephemeral],
     });
     return;
   }
@@ -38,7 +39,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     logger.warn('[log-commit-plus] WELCOME_CHANNEL_ID is not set in .env');
     await interaction.reply({
       content: 'WELCOME_CHANNEL_ID não está configurado.',
-      ephemeral: true,
+      flags: [MessageFlags.Ephemeral],
     });
     return;
   }
@@ -48,7 +49,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     logger.warn(`[log-commit-plus] Channel ${CHANNELS.WELCOME} not found or not text-based`);
     await interaction.reply({
       content: 'Canal de boas-vindas não encontrado ou não é um canal de texto.',
-      ephemeral: true,
+      flags: [MessageFlags.Ephemeral],
     });
     return;
   }
@@ -58,15 +59,16 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   const embed = new EmbedBuilder()
     .setColor(PRIMARY_COLOR)
     .setDescription(`🎉 <@${target.id}> acabou de receber o cargo **Commit+**!`)
-    .setThumbnail(target.displayAvatarURL())
-    .setTimestamp();
+    .setThumbnail(target.displayAvatarURL());
 
   await (channel as TextChannel).send({ embeds: [embed] });
 
-  logger.success(`[log-commit-plus] ${interaction.user.tag} announced Commit+ for ${target.tag}`);
+  logger.success(
+    `[log-commit-plus] ${interaction.user.username} announced Commit+ for ${target.username}`,
+  );
 
   await interaction.reply({
     content: `✅ Anúncio enviado para ${target.username}.`,
-    ephemeral: true,
+    flags: [MessageFlags.Ephemeral],
   });
 }

@@ -8,6 +8,8 @@ import {
   EmbedBuilder,
   Guild,
   GuildMember,
+  LabelBuilder,
+  MessageFlags,
   ModalBuilder,
   ModalSubmitInteraction,
   PermissionFlagsBits,
@@ -110,23 +112,26 @@ async function createTicketChannel(
     ],
   });
 
-  logger.info(`[tickets] Created ${channelName} for ${member.user.tag} — "${subject}"`);
+  logger.info(`[tickets] Created ${channelName} for ${member.user.username} — "${subject}"`);
 
   return channel;
 }
 
 export async function handleTicketOpen(interaction: ButtonInteraction): Promise<void> {
-  const modal = new ModalBuilder().setCustomId('ticket:modal').setTitle('Abrir Ticket');
-
-  const subjectInput = new TextInputBuilder()
-    .setCustomId('ticket:subject')
-    .setLabel('Qual é o assunto do teu ticket?')
-    .setStyle(TextInputStyle.Short)
-    .setPlaceholder('Ex: Problema com o meu cargo')
-    .setMaxLength(100)
-    .setRequired(true);
-
-  modal.addComponents(new ActionRowBuilder<TextInputBuilder>().addComponents(subjectInput));
+  const modal = new ModalBuilder()
+    .setCustomId('ticket:modal')
+    .setTitle('Abrir Ticket')
+    .addLabelComponents(
+      new LabelBuilder()
+        .setLabel('Qual é o assunto do teu ticket?')
+        .setTextInputComponent(
+          new TextInputBuilder()
+            .setCustomId('ticket:subject')
+            .setStyle(TextInputStyle.Short)
+            .setMaxLength(100)
+            .setRequired(true),
+        ),
+    );
 
   await interaction.showModal(modal);
 }
@@ -218,7 +223,7 @@ export async function handleTicketClose(interaction: ButtonInteraction): Promise
   if (!member?.permissions.has(PermissionFlagsBits.Administrator)) {
     await interaction.reply({
       content: '❌ Apenas administradores podem fechar tickets.',
-      ephemeral: true,
+      flags: [MessageFlags.Ephemeral],
     });
     return;
   }
@@ -231,7 +236,7 @@ export async function handleTicketClose(interaction: ButtonInteraction): Promise
   await interaction.reply({ content: '🔒 A arquivar o ticket...' });
 
   incrementResolvedTickets();
-  logger.info(`[tickets] Archiving ${channel.name} by ${interaction.user.tag}`);
+  logger.info(`[tickets] Archiving ${channel.name} by ${interaction.user.username}`);
 
   await channel.permissionOverwrites.set([
     {
