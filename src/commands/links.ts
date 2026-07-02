@@ -1,11 +1,12 @@
 import {
+  ButtonStyle,
   ChatInputCommandInteraction,
-  EmbedBuilder,
+  ComponentType,
+  ContainerBuilder,
   MessageFlags,
   SlashCommandBuilder,
 } from 'discord.js';
-import { PRIMARY_COLOR } from '../constants';
-import { getFooterText } from '../lib/footer';
+import { brBuilder } from '../lib/brBuilder';
 
 const COMMUNITY_LINKS = {
   instagram: 'https://www.instagram.com/commitpt_/',
@@ -16,7 +17,7 @@ const COMMUNITY_LINKS = {
 const CREATOR_LINKS = {
   github: 'https://github.com/spars57',
   instagram: 'https://instagram.com/@brumoisao',
-  linkedin: 'https://linkedin.com/in/@brunomoisao',
+  linkedin: 'https://linkedin.com/in/brunomoisao',
   tiktok: 'https://tiktok.com/@brumoisao2',
 };
 
@@ -25,35 +26,88 @@ export const data = new SlashCommandBuilder()
   .setDescription('Mostra todos os links da comunidade e do criador CommitPT');
 
 export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
-  const embed = new EmbedBuilder()
-    .setColor(PRIMARY_COLOR)
-    .setTitle('🔗 Links CommitPT')
-    .addFields(
+  const container = new ContainerBuilder({
+    accent_color: 0x79c0ff,
+    components: [
       {
-        name: '🌍 Comunidade',
-        value: [
-          `📸 Instagram — ${COMMUNITY_LINKS.instagram}`,
-          `🌐 Website — ${COMMUNITY_LINKS.website}`,
-          `💼 LinkedIn — ${COMMUNITY_LINKS.linkedin}`,
-        ].join('\n'),
+        type: ComponentType.TextDisplay,
+        content: brBuilder('# 🔗 Links CommitPT', '', '### 🌍 Comunidade'),
       },
       {
-        name: '👤 Bruno Moisão (Criador)',
-        value: [
-          `🐙 GitHub — ${CREATOR_LINKS.github}`,
-          `📸 Instagram — ${CREATOR_LINKS.instagram}`,
-          `💼 LinkedIn — ${CREATOR_LINKS.linkedin}`,
-          `🎵 TikTok — ${CREATOR_LINKS.tiktok}`,
-        ].join('\n'),
+        type: ComponentType.ActionRow,
+        components: [
+          {
+            type: ComponentType.Button,
+            style: ButtonStyle.Link,
+            label: 'Instagram',
+            emoji: { name: '📸' },
+            url: COMMUNITY_LINKS.instagram,
+          },
+          {
+            type: ComponentType.Button,
+            style: ButtonStyle.Link,
+            label: 'Website',
+            emoji: { name: '🌐' },
+            url: COMMUNITY_LINKS.website,
+          },
+          {
+            type: ComponentType.Button,
+            style: ButtonStyle.Link,
+            label: 'LinkedIn',
+            emoji: { name: '💼' },
+            url: COMMUNITY_LINKS.linkedin,
+          },
+        ],
       },
-    )
-    .setFooter({ text: getFooterText(interaction) })
-    .setTimestamp();
+      {
+        type: ComponentType.Separator,
+        divider: true,
+        spacing: 2,
+      },
+      {
+        type: ComponentType.TextDisplay,
+        content: brBuilder('### 👤 Bruno Moisão (Criador)'),
+      },
+      {
+        type: ComponentType.ActionRow,
+        components: [
+          {
+            type: ComponentType.Button,
+            style: ButtonStyle.Link,
+            label: 'Github',
+            emoji: { name: '🐙' },
+            url: CREATOR_LINKS.github,
+          },
+          {
+            type: ComponentType.Button,
+            style: ButtonStyle.Link,
+            label: 'Instagram',
+            emoji: { name: '📸' },
+            url: COMMUNITY_LINKS.instagram,
+          },
+          {
+            type: ComponentType.Button,
+            style: ButtonStyle.Link,
+            label: 'LinkedIn',
+            emoji: { name: '💼' },
+            url: COMMUNITY_LINKS.linkedin,
+          },
+          {
+            type: ComponentType.Button,
+            style: ButtonStyle.Link,
+            label: 'TikTok',
+            emoji: { name: '🎵' },
+            url: CREATOR_LINKS.tiktok,
+          },
+        ],
+      },
+    ],
+  });
 
   await Promise.all([
     interaction.reply({ content: 'Enviado!', flags: [MessageFlags.Ephemeral] }),
     interaction.channel?.isSendable()
-      ? interaction.channel.send({ embeds: [embed] })
+      ? interaction.channel.send({ components: [container], flags: [MessageFlags.IsComponentsV2] })
       : Promise.resolve(),
   ]);
 }
