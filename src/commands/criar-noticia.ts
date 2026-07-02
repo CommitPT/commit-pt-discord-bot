@@ -1,6 +1,7 @@
 import {
   ChatInputCommandInteraction,
   EmbedBuilder,
+  MessageFlags,
   PermissionFlagsBits,
   SlashCommandBuilder,
   TextChannel,
@@ -32,7 +33,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   if (!member?.roles.cache.has(ROLES.STAFF)) {
     await interaction.reply({
       content: 'Não tens permissão para usar este comando.',
-      ephemeral: true,
+      flags: [MessageFlags.Ephemeral],
     });
     return;
   }
@@ -40,17 +41,20 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   const url = interaction.options.getString('url', true);
 
   if (!URL.canParse(url)) {
-    await interaction.reply({ content: 'URL inválido.', ephemeral: true });
+    await interaction.reply({ content: 'URL inválido.', flags: [MessageFlags.Ephemeral] });
     return;
   }
 
   const channel = interaction.guild?.channels.cache.get(CHANNELS.NEWS) as TextChannel | undefined;
   if (!channel) {
-    await interaction.reply({ content: 'Canal de notícias não encontrado.', ephemeral: true });
+    await interaction.reply({
+      content: 'Canal de notícias não encontrado.',
+      flags: [MessageFlags.Ephemeral],
+    });
     return;
   }
 
-  await interaction.deferReply({ ephemeral: true });
+  await interaction.deferReply({ flags: [MessageFlags.Ephemeral] });
 
   const title = (await fetchPageTitle(url)) ?? url;
 
@@ -63,6 +67,6 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
 
   await channel.send({ embeds: [embed] });
 
-  logger.info(`[criar-noticia] ${interaction.user.tag} published: ${url}`);
+  logger.info(`[criar-noticia] ${interaction.user.username} published: ${url}`);
   await interaction.editReply({ content: '✅ Notícia publicada.' });
 }

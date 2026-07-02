@@ -1,4 +1,9 @@
-import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
+import {
+  ChatInputCommandInteraction,
+  EmbedBuilder,
+  MessageFlags,
+  SlashCommandBuilder,
+} from 'discord.js';
 import { getInvitesLeaderboard } from '../events/inviteTracker';
 import { PRIMARY_COLOR } from '../constants';
 
@@ -13,7 +18,10 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   const rows = getInvitesLeaderboard(interaction.guildId!);
 
   if (rows.length === 0) {
-    await interaction.reply({ content: 'Ainda não há registos de convites.', ephemeral: true });
+    await interaction.reply({
+      content: 'Ainda não há registos de convites.',
+      flags: [MessageFlags.Ephemeral],
+    });
     return;
   }
 
@@ -28,8 +36,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   const embed = new EmbedBuilder()
     .setColor(PRIMARY_COLOR)
     .setTitle('🏆 Leaderboard de Convites')
-    .setDescription(description)
-    .setTimestamp();
+    .setDescription(description);
 
   await interaction.reply({ embeds: [embed] });
 }

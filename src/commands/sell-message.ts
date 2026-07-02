@@ -4,6 +4,7 @@ import {
   ButtonStyle,
   ChatInputCommandInteraction,
   EmbedBuilder,
+  MessageFlags,
   PermissionFlagsBits,
   SlashCommandBuilder,
   TextChannel,
@@ -21,16 +22,16 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   if (!interaction.guildId || !interaction.memberPermissions) {
     await interaction.reply({
       content: 'Este comando só pode ser usado num servidor.',
-      ephemeral: true,
+      flags: [MessageFlags.Ephemeral],
     });
     return;
   }
 
   if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) {
-    logger.warn(`[sell-message] Unauthorized attempt by ${interaction.user.tag}`);
+    logger.warn(`[sell-message] Unauthorized attempt by ${interaction.user.username}`);
     await interaction.reply({
       content: 'Precisas de permissões de Administrador para usar este comando.',
-      ephemeral: true,
+      flags: [MessageFlags.Ephemeral],
     });
     return;
   }
@@ -85,7 +86,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
 
   await (interaction.channel as TextChannel).send({ embeds: [embed], components: [row] });
 
-  logger.success(`[sell-message] ${interaction.user.tag} sent the Commit+ sell message`);
+  logger.success(`[sell-message] ${interaction.user.username} sent the Commit+ sell message`);
 
-  await interaction.reply({ content: '✅ Mensagem enviada.', ephemeral: true });
+  await interaction.reply({ content: '✅ Mensagem enviada.', flags: [MessageFlags.Ephemeral] });
 }

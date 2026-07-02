@@ -1,6 +1,7 @@
 import {
   ChatInputCommandInteraction,
   EmbedBuilder,
+  MessageFlags,
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from 'discord.js';
@@ -25,7 +26,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   if (target.id === inviter.id) {
     await interaction.reply({
       content: 'O target e o inviter não podem ser o mesmo membro.',
-      ephemeral: true,
+      flags: [MessageFlags.Ephemeral],
     });
     return;
   }

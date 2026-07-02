@@ -1,4 +1,9 @@
-import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
+import {
+  ChatInputCommandInteraction,
+  EmbedBuilder,
+  MessageFlags,
+  SlashCommandBuilder,
+} from 'discord.js';
 import { calculateProgress } from '../lib/levels';
 import { queries } from '../queries/xp';
 import { logger } from '../logger';
@@ -15,19 +20,21 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   if (!interaction.guildId) {
     await interaction.reply({
       content: 'Este comando só pode ser usado num servidor.',
-      ephemeral: true,
+      flags: [MessageFlags.Ephemeral],
     });
     return;
   }
 
-  logger.info(`[leaderboard] Requested by ${interaction.user.tag} in guild ${interaction.guildId}`);
+  logger.info(
+    `[leaderboard] Requested by ${interaction.user.username} in guild ${interaction.guildId}`,
+  );
 
   const rows = queries.getTopXp.all(interaction.guildId, LEADERBOARD_SIZE);
 
   if (rows.length === 0) {
     await interaction.reply({
       content: 'Ainda não há dados de XP para este servidor.',
-      ephemeral: true,
+      flags: [MessageFlags.Ephemeral],
     });
     return;
   }
@@ -49,8 +56,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     .setColor(PRIMARY_COLOR)
     .setTitle('🏆 Leaderboard de XP')
     .setDescription(lines.join('\n'))
-    .setFooter({ text: `Top ${rows.length} membros · CommitPT` })
-    .setTimestamp();
+    .setFooter({ text: `Top ${rows.length} membros · CommitPT` });
 
   await interaction.reply({ embeds: [embed] });
 }

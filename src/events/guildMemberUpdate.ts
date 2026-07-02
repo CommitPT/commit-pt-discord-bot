@@ -17,7 +17,7 @@ export async function handleGuildMemberUpdate(
     if (roleIdsToRemove.length > 0) {
       await newMember.roles.remove(roleIdsToRemove);
       logger.info(
-        `[guildMemberUpdate] Removed ${roleIdsToRemove.length} project role(s) from ${newMember.user.tag} (lost Commit+)`,
+        `[guildMemberUpdate] Removed ${roleIdsToRemove.length} project role(s) from ${newMember.user.username} (lost Commit+)`,
       );
     }
     return;
@@ -26,7 +26,7 @@ export async function handleGuildMemberUpdate(
   if (hadRole || !hasRole) return;
 
   logger.info(
-    `[guildMemberUpdate] ${newMember.user.tag} received Commit+ role in "${newMember.guild.name}"`,
+    `[guildMemberUpdate] ${newMember.user.username} received Commit+ role in "${newMember.guild.name}"`,
   );
 
   if (!CHANNELS.WELCOME) {
@@ -44,7 +44,7 @@ export async function handleGuildMemberUpdate(
   }
 
   logger.info(
-    `[guildMemberUpdate] Sending Commit+ announcement for ${newMember.user.tag} to #${channel.name}`,
+    `[guildMemberUpdate] Sending Commit+ announcement for ${newMember.user.username} to #${channel.name}`,
   );
 
   const embed = new EmbedBuilder()
