@@ -1,7 +1,12 @@
-import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
+import {
+  ChatInputCommandInteraction,
+  EmbedBuilder,
+  GuildMember,
+  SlashCommandBuilder,
+} from 'discord.js';
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { PRIMARY_COLOR } from '../constants';
+import { CHANNELS, PRIMARY_COLOR, ROLES } from '../constants';
 import { getFooterText } from '../lib/footer';
 
 interface ExpenseItem {
@@ -35,6 +40,16 @@ export const data = new SlashCommandBuilder()
   .setDescription('Mostra os custos mensais da infraestrutura da comunidade CommitPT');
 
 export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
+  const member = interaction.member;
+
+  if (!(member instanceof GuildMember) || !member.roles.cache.has(ROLES.COMMIT_PLUS)) {
+    await interaction.reply({
+      content: `Este comando é exclusivo para membros Commit+. Podes obter mais informações através do canal <#${CHANNELS.COMMIT_PLUS}>.`,
+      ephemeral: true,
+    });
+    return;
+  }
+
   const expensesPath = join(process.cwd(), 'expenses.json');
   const expenses: Expenses = JSON.parse(readFileSync(expensesPath, 'utf-8'));
 
