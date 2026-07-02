@@ -4,6 +4,7 @@ import {
   ButtonStyle,
   ChatInputCommandInteraction,
   EmbedBuilder,
+  MessageFlags,
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from 'discord.js';
@@ -36,5 +37,10 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
       .setStyle(ButtonStyle.Danger),
   );
 
-  await interaction.reply({ embeds: [embed], components: [row] });
+  await Promise.all([
+    interaction.reply({ content: 'Enviado!', flags: [MessageFlags.Ephemeral] }),
+    interaction.channel?.isSendable()
+      ? interaction.channel.send({ embeds: [embed], components: [row] })
+      : Promise.resolve(),
+  ]);
 }
