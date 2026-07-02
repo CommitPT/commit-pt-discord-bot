@@ -1,4 +1,9 @@
-import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
+import {
+  ChatInputCommandInteraction,
+  EmbedBuilder,
+  MessageFlags,
+  SlashCommandBuilder,
+} from 'discord.js';
 import { PRIMARY_COLOR } from '../constants';
 import { getFooterText } from '../lib/footer';
 
@@ -45,5 +50,10 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     .setFooter({ text: getFooterText(interaction) })
     .setTimestamp();
 
-  await interaction.reply({ embeds: [embed] });
+  await Promise.all([
+    interaction.reply({ content: 'Enviado!', flags: [MessageFlags.Ephemeral] }),
+    interaction.channel?.isSendable()
+      ? interaction.channel.send({ embeds: [embed] })
+      : Promise.resolve(),
+  ]);
 }
