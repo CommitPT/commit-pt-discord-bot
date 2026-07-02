@@ -15,9 +15,26 @@ export const ROLES = {
 } as const;
 
 export const PROJECT_ROLES = [
-  { name: 'Discord Developer', roleId: '1521545395459719379' },
-  { name: 'Website Developer', roleId: '1521545491278463077' },
-  { name: 'Platform Developer', roleId: '1521545454394015918' },
+  {
+    name: 'Discord Team',
+    roleId: '1521545395459719379',
+    description: 'Participa no desenvolvimento e manutenção do bot usado no nosso servidor.',
+  },
+  {
+    name: 'Website Team',
+    roleId: '1521545491278463077',
+    description: 'Desenvolve e mantém o website oficial da nossa comunidade.',
+  },
+  {
+    name: 'Platform Team',
+    roleId: '1521545454394015918',
+    description: 'Constrói e mantém a nossa plataforma interna.',
+  },
+  {
+    name: 'Design Team',
+    roleId: '1522141155842723960',
+    description: 'Cria a identidade visual e os assets gráficos dos nossos projetos.',
+  },
 ] as const;
 
 export const AUTO_ROLES_AREAS = [

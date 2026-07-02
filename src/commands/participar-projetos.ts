@@ -22,6 +22,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     .setDescription(
       'Queres fazer parte de algum dos nossos projetos internos?\n\nEscolhe o(s) projeto(s) em que queres participar:',
     )
+    .addFields(PROJECT_ROLES.map((r) => ({ name: r.name, value: r.description, inline: false })))
     .setFooter({ text: getFooterText(interaction) })
     .setTimestamp();
 
