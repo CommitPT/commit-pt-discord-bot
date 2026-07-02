@@ -116,6 +116,7 @@ export const AUTO_ROLES_LANGUAGES: { name: string; emoji: RoleEmoji; roleId: str
 
 export const CATEGORIES = {
   TICKETS: '1514018939460517968',
+  TICKETS_ARQUIVADOS: '1522258441257750759',
 } as const;
 
 export const CHANNELS = {

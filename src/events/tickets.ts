@@ -224,17 +224,23 @@ export async function handleTicketClose(interaction: ButtonInteraction): Promise
   }
 
   const channel = interaction.channel as TextChannel | null;
+  const guild = interaction.guild;
 
-  if (!channel) return;
+  if (!channel || !guild) return;
 
-  await interaction.reply({ content: '🔒 A fechar o ticket...' });
+  await interaction.reply({ content: '🔒 A arquivar o ticket...' });
 
   incrementResolvedTickets();
-  logger.info(`[tickets] Closing ${channel.name} by ${interaction.user.tag}`);
+  logger.info(`[tickets] Archiving ${channel.name} by ${interaction.user.tag}`);
 
-  setTimeout(() => {
-    channel
-      .delete()
-      .catch((err: unknown) => logger.error('[tickets] Failed to delete channel:', err));
-  }, 3000);
+  await channel.permissionOverwrites.set([
+    {
+      id: guild.roles.everyone.id,
+      deny: [PermissionFlagsBits.ViewChannel],
+    },
+  ]);
+
+  await channel.setParent(CATEGORIES.TICKETS_ARQUIVADOS, { lockPermissions: false });
+
+  logger.info(`[tickets] Archived ${channel.name} → TICKETS_ARQUIVADOS`);
 }
